@@ -1,0 +1,63 @@
+/* html, body, main {
+    height: 100%;
+} */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body, header, h1, h2, h5, ul {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+}
+
+input, p, a {
+    font-size: 24px;
+    width: 100%;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    margin-top: 4rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    border: 5px solid #9f9f9f;
+    border-radius: 20px;
+    padding: 20px;
+    width: 80%;
+    max-width: 400px;
+}
+
+fieldset {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: none;
+    padding: 0;
+}
+
+fieldset input {
+    padding: 24px;
+    border: 3px solid #9f9f9f;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+input[type=submit] {
+    background-color: #427BFF;
+    padding: 24px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}

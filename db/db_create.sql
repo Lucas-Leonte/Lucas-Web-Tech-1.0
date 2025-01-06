@@ -14,8 +14,9 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `elab`.`users` (
     `UserId` INT NOT NULL AUTO_INCREMENT,
     `Email` VARCHAR(100) NOT NULL,
-    `Password` VARCHAR(512) NOT NULL,
     `Role` INT NOT NULL,
+    `Password` VARCHAR(128) NOT NULL,
+    `PasswordSalt` VARCHAR(128) NOT NULL,
     `PhoneNum` VARCHAR(20) NULL,
     `Active` TINYINT NULL DEFAULT 0,
     `Budget` DECIMAL(10,2) NOT NULL DEFAULT 0,

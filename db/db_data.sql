@@ -5,9 +5,9 @@ VALUES
 (1, 'Customer');
 
 INSERT INTO `users`
-(`Email`, `Password`, `Role`, `PhoneNum`, `Active`, `Budget`)
+(`Email`, `Role`, `Password`, `PasswordSalt`, `PhoneNum`, `Active`, `Budget`)
 VALUES
-('ale.2000.ar26@gmail.com', 'admin', 0, NULL, 0, 0);
+('ale.2000.ar26@gmail.com', 0, 'admin', '', NULL, 0, 0);
 
 INSERT INTO `product_categories`
 (`Description`)
