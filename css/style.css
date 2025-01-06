@@ -23,7 +23,8 @@ input, p, a {
 main {
     display: flex;
     flex-direction: column;
-    margin-top: 4rem;
+    margin-top: 40px;
+    margin-bottom: 70px;
 }
 
 form {
@@ -31,6 +32,7 @@ form {
     flex-direction: column;
     align-items: center;
     margin: auto;
+    margin-top: 4rem;
     border: 5px solid #9f9f9f;
     border-radius: 20px;
     padding: 20px;
@@ -60,4 +62,91 @@ input[type=submit] {
     border: none;
     border-radius: 8px;
     cursor: pointer;
+}
+
+nav {
+    width: 100%;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 63px;
+    border-bottom: 3px solid #9f9f9f;
+    width: 100%;
+    text-align: center;
+}
+
+footer ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 63px;
+    border-top: 3px solid #9f9f9f;
+    width: 100%;
+}
+
+figcaption {
+    display: none;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    display: inline-block;
+}
+
+body > footer {
+    position: fixed;
+    bottom: 0;
+    z-index: 2;
+    background-color: white;
+    width: 100%;
+}
+
+body > nav {
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    background-color: white;
+    width: 100%;
+}
+
+main > section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: lightgray;
+    max-width: 400px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 10px;
+    width: 100%;
+}
+
+article > section {
+    display: flex;
+    flex-direction: row;
+}
+
+article aside {
+    display: block;
+    width: 100%;
+}
+
+article img {
+    width: 200px;
+    height: auto;
 }

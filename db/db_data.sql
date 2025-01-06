@@ -17,11 +17,11 @@ VALUES
 ('Rompicapo');
 
 INSERT INTO `products`
-(`Name`, `ShortDesc`, `LongDesc`, `Price`, `PlayerNumFrom`, `PlayerNumTo`, `Category`, `StockQuantity`)
+(`Name`, `ShortDesc`, `LongDesc`, `Price`, `PlayerNumFrom`, `PlayerNumTo`, `Category`, `StockQuantity`, `Image Name`)
 VALUES
-('Monopoly', 'Il classico Monopoly', 'Descrizione lunga di test', 29.99, 1, 4, 1, 10),
-('Exploding Kittens', 'Gioco di carte con gattini', 'Descrizione lunga di test', 19.99, 1, 8, 2, 20),
-('Cubo di Rubik', 'Il rompicapo più famoso', 'Descrizione lunga di test', 4.99, 1, 1, 2, 30);
+('Monopoly', 'Il classico Monopoly', 'Descrizione lunga di test', 29.99, 1, 4, 1, 10, 'Monopoly.jpg'),
+('Exploding Kittens', 'Gioco di carte con gattini', 'Descrizione lunga di test', 19.99, 1, 8, 2, 20, 'Exploding Kittens.jpg'),
+('Cubo di Rubik', 'Il rompicapo più famoso', 'Descrizione lunga di test', 4.99, 1, 1, 2, 30, 'Cubo Rubik.jpg');
 
 -- INSERT INTO `notification_types` VALUES
 

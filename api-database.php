@@ -10,15 +10,10 @@ class DatabaseAPI {
     }
 
     public function GetProducts() {
-        $stmt = $this->db->prepare("SELECT ProductId, Name, ShortDesc, LongDesc, Price, PlayerNumFrom, PlayerNumTo, Category, StockQuantity FROM products");
+        $stmt = $this->db->prepare("SELECT ProductId, Name, ShortDesc, LongDesc, Price, PlayerNumFrom, PlayerNumTo, Category, StockQuantity, ImageName FROM products");
 
         $stmt->execute();
-        $result = $stmt->get_result();
-
-        $temp = $result->fetch_all(MYSQLI_ASSOC);
-        var_dump($temp);
-
-        return $temp;
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
     public function SecureLogin($email, $password){

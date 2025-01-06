@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `elab`.`products` (
     `PlayerNumTo` SMALLINT NOT NULL DEFAULT 1,
     `Category` INT NOT NULL,
     `StockQuantity` INT NOT NULL DEFAULT 0,
+    `ImageName` VARCHAR(256) NOT NULL,
     PRIMARY KEY (`ProductId`),
     CONSTRAINT `fk_products_categories`
         FOREIGN KEY (`Category`)
