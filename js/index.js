@@ -324,7 +324,7 @@ async function ShowCartProducts() {
                             <h2>+</h2>
                         </section>
                     </footer>
-                </article>`
+                </article>`;
         }
 
         main.innerHTML = `
