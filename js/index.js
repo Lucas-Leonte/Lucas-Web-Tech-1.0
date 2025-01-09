@@ -325,6 +325,7 @@ async function ShowCartProducts() {
                         </section>
                     </footer>
                 </article>`;
+                // TEST
         }
 
         main.innerHTML = `
