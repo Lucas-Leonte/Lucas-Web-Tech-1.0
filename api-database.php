@@ -9,13 +9,6 @@ class DatabaseAPI {
         }        
     }
 
-    public function GetProducts() {
-        $stmt = $this->db->prepare("SELECT ProductId, Name, ShortDesc, LongDesc, Price, PlayerNumFrom, PlayerNumTo, Category, StockQuantity, ImageName FROM products");
-
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
-
     public function SecureLogin($email, $password){
         $stmt = $this->db->prepare("SELECT UserId, Email, Password, PasswordSalt FROM users WHERE Email = ? LIMIT 1");
         $stmt->bind_param('s', $email); // esegue il bind del parametro '$email'.
@@ -78,6 +71,22 @@ class DatabaseAPI {
         $stmt->bind_param('sssss', $email, $userRole, $securePassword, $random_salt, $phoneNum);
         
         return $stmt->execute();
+    }
+
+    public function GetProducts() {
+        $stmt = $this->db->prepare("SELECT ProductId, Name, ShortDesc, LongDesc, Price, PlayerNumFrom, PlayerNumTo, Category, StockQuantity, ImageName FROM products");
+
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    
+    public function GetUserCartProducts() {
+        $stmt = $this->db->prepare("SELECT p.ProductId, p.Name, p.LongDesc, p.Price, p.PlayerNumFrom, p.PlayerNumTo, p.Category, p.StockQuantity, p.ImageName FROM products AS p, users AS u WHERE u.UserId = ?");
+        $stmt->bind_param('s', $_SESSION['user_id']);
+
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
 ?>

@@ -273,6 +273,78 @@ async function ShowProducts() {
     }
 }
 
+let cartProducts;
+
+function CalculateCartProductsTotalPrice() {
+    let total = 0;
+    for (let product in cartProducts) {
+        total += product[i]["Price"] * product[i]["Quantity"];
+    }
+}
+
+async function ShowCartProducts() {
+    const url = 'api-cart-products.php';
+    
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        cartProducts = await response.json();
+
+        let main = document.querySelector("main");
+        let articles = "";
+
+        for (let i = 0; i < products.length; i++) {
+            articles += `
+                <article>
+                    <header>
+                        <h2>${products[i]["Name"]}</h2>
+                    </header>
+                    <section>
+                        <figure>
+                            <img src="${products[i]["ImageName"]}" alt=""/>
+                            <figcaption></figcaption>
+                        </figure>
+                        <aside>
+                            <h2>$${products[i]["Price"]}</h2>
+                            <section>
+                                <h2>${products[i]["PlayerNumFrom"]}-${products[i]["PlayerNumTo"]}</h2>
+                            </section>
+                        </aside>
+                    </section>
+                    <footer>
+                        <section>
+                            <h2>-</h2>
+                            <h2>${products[i]["Quantity"]}</h2>
+                            <h2>+</h2>
+                        </section>
+                    </footer>
+                </article>`
+        }
+
+        main.innerHTML = `
+            <section>
+                ${articles}
+            </section>
+            <section>
+                <h2>Total: ${}</h2>
+            </section>`;
+
+        // TODO: pulsanti + e -
+        document.querySelectorAll("article > footer > section > h2:first-child").forEach(x => {
+            // x.addEventListener()
+        })
+            
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 async function ShowSearchPage() {
     await ChangeSelectedIcon(2);
 
@@ -289,6 +361,8 @@ async function ShowCartPage() {
     await ChangeSelectedIcon(4);
 
     document.querySelector("main").innerHTML = "";
+
+    await ShowCartProducts();
 }
 
 this.ShowLoginPage();
