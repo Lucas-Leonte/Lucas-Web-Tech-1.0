@@ -10,6 +10,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
         $result["success"] = true;
     }
 }
+//test di prova git
 
 header('Content-Type: application/json');
 echo json_encode($result);
