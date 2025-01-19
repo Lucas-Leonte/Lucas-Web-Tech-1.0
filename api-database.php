@@ -82,7 +82,7 @@ class DatabaseAPI {
 
     
     public function GetUserCartProducts() {
-        $stmt = $this->db->prepare("SELECT p.ProductId, p.Name, p.LongDesc, p.Price, p.PlayerNumFrom, p.PlayerNumTo, p.Category, p.StockQuantity, p.ImageName FROM products AS p, users AS u WHERE u.UserId = ?");
+        $stmt = $this->db->prepare("SELECT p.ProductId, p.Name, p.LongDesc, p.Price, p.PlayerNumFrom, p.PlayerNumTo, p.Category, p.ImageName, c.Quantity FROM carts AS c INNER JOIN products AS p ON c.Product = p.ProductId WHERE c.User = ?");
         $stmt->bind_param('s', $_SESSION['user_id']);
 
         $stmt->execute();

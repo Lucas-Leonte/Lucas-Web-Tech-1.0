@@ -280,6 +280,7 @@ function CalculateCartProductsTotalPrice() {
     for (let product in cartProducts) {
         total += product[i]["Price"] * product[i]["Quantity"];
     }
+    return total;
 }
 
 async function ShowCartProducts() {
@@ -299,28 +300,28 @@ async function ShowCartProducts() {
         let main = document.querySelector("main");
         let articles = "";
 
-        for (let i = 0; i < products.length; i++) {
+        for (let i = 0; i < cartProducts.length; i++) {
             articles += `
                 <article>
                     <header>
-                        <h2>${products[i]["Name"]}</h2>
+                        <h2>${cartProducts[i]["Name"]}</h2>
                     </header>
                     <section>
                         <figure>
-                            <img src="${products[i]["ImageName"]}" alt=""/>
+                            <img src="${cartProducts[i]["ImageName"]}" alt=""/>
                             <figcaption></figcaption>
                         </figure>
                         <aside>
-                            <h2>$${products[i]["Price"]}</h2>
+                            <h2>$${cartProducts[i]["Price"]}</h2>
                             <section>
-                                <h2>${products[i]["PlayerNumFrom"]}-${products[i]["PlayerNumTo"]}</h2>
+                                <h2>${cartProducts[i]["PlayerNumFrom"]}-${products[i]["PlayerNumTo"]}</h2>
                             </section>
                         </aside>
                     </section>
                     <footer>
                         <section>
                             <h2>-</h2>
-                            <h2>${products[i]["Quantity"]}</h2>
+                            <h2>${cartProducts[i]["Quantity"]}</h2>
                             <h2>+</h2>
                         </section>
                     </footer>
@@ -328,12 +329,14 @@ async function ShowCartProducts() {
                 // TEST
         }
 
+        let cartTotalPrice = CalculateCartProductsTotalPrice();
+
         main.innerHTML = `
             <section>
                 ${articles}
             </section>
             <section>
-                <h2>Total: ${}</h2>
+                <h2>Total: ${cartTotalPrice}</h2>
             </section>`;
 
         // TODO: pulsanti + e -
