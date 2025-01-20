@@ -115,7 +115,7 @@ async function SignUp() {
         console.log(json);
 
         if(json["success"]) {
-            ShowHomePage();
+            ShowUserHomePage();
         }
         // else{
         //     document.querySelector("form > p").innerText = json["error"];

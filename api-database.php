@@ -95,7 +95,6 @@ class DatabaseAPI {
     }
 
     public function IncreaseUserCartProduct($productId) {
-        try {
         $stmt = $this->db->prepare("SELECT Quantity FROM carts WHERE User = ? AND Product = ?");
         $stmt->bind_param('ss', $_SESSION['user_id'], $productId);
         $stmt->execute();
@@ -108,9 +107,6 @@ class DatabaseAPI {
         $stmt->execute();
 
         return $newQuantity;
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
     }
 
     public function DecreaseUserCartProduct($productId) {
