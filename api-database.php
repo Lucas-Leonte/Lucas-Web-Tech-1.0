@@ -67,16 +67,27 @@ class DatabaseAPI {
         }
 
         $userRole = 1;
+        $budget = 0.00;
 
         // Crea una chiave casuale
         $random_salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
         // Crea una password usando la chiave appena creata.
         $securePassword = hash('sha512', $password.$random_salt);
 
-        $stmt = $this->db->prepare("INSERT INTO users (`Email`, `Role`, `Password`, `PasswordSalt`, `PhoneNum`) VALUES (?,?,?,?,?)");
-        $stmt->bind_param('sssss', $email, $userRole, $securePassword, $random_salt, $phoneNum);
-        
-        return $stmt->execute();
+        // Se la registrazione avviene con una mail istituzionale, vengono donati 100€ di budget iniziale
+        $emailStrings = explode('@', $email);
+        $emailDom = $emailStrings[count($emailStrings) - 1];
+
+        if (strtolower($emailDom) == "studio.unibo.it") {
+            $budget = 100.00;
+        }
+
+        // Registrazione utente
+        $stmt = $this->db->prepare("INSERT INTO users (`Email`, `Role`, `Password`, `PasswordSalt`, `PhoneNum`, `Budget`) VALUES (?,?,?,?,?,?)");
+        $stmt->bind_param('ssssss', $email, $userRole, $securePassword, $random_salt, $phoneNum, $budget);
+        $result = $stmt->execute();
+
+        return $result;
     }
 
     public function GetProducts() {
