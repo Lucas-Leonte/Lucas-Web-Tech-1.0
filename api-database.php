@@ -10,20 +10,22 @@ class DatabaseAPI {
     }
 
     public function SecureLogin($email, $password){
-        $stmt = $this->db->prepare("SELECT UserId, Email, Password, PasswordSalt FROM users WHERE Email = ? LIMIT 1");
+        $stmt = $this->db->prepare("SELECT UserId, Email, Role, Password, PasswordSalt FROM users WHERE Email = ? LIMIT 1");
         $stmt->bind_param('s', $email); // esegue il bind del parametro '$email'.
         $stmt->execute(); // esegue la query appena creata.
         $stmt->store_result();
-        $stmt->bind_result($user_id, $username, $db_password, $salt); // recupera il risultato della query e lo memorizza nelle relative variabili.
+        $stmt->bind_result($user_id, $e_mail, $role, $db_password, $salt); // recupera il risultato della query e lo memorizza nelle relative variabili.
         $stmt->fetch();
         $password = hash('sha512', $password.$salt); // codifica la password usando una chiave univoca.
+
+        $result['success'] = false;
 
         if($stmt->num_rows == 1) { // se l'utente esiste
             // verifichiamo che non sia disabilitato in seguito all'esecuzione di troppi tentativi di accesso errati.
             if(false) { //checkbrute($user_id, $mysqli) == true) { 
                 // Account disabilitato
                 // Invia un e-mail all'utente avvisandolo che il suo account è stato disabilitato.
-                return false;
+                $result['success'] = false;
             } else {
                 if($db_password == $password) { // Verifica che la password memorizzata nel database corrisponda alla password fornita dall'utente.
                 // Password corretta!            
@@ -31,22 +33,26 @@ class DatabaseAPI {
     
                     $user_id = preg_replace("/[^0-9]+/", "", $user_id); // ci proteggiamo da un attacco XSS
                     $_SESSION['user_id'] = $user_id; 
-                    $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $username); // ci proteggiamo da un attacco XSS
-                    $_SESSION['email'] = $email;
+                    // $email = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $email); // ci proteggiamo da un attacco XSS
+                    $_SESSION['email'] = $e_mail;
                     $_SESSION['login_string'] = hash('sha512', $password.$user_browser);
                     // Login eseguito con successo.
-                    return true;    
+
+                    $result["success"] = true;
+                    $result["role"] = $role;
+
+                    return $result;    
                 } else {
                     // Password incorretta.
                     // Registriamo il tentativo fallito nel database.
                     $now = time();
                     // $mysqli->query("INSERT INTO login_attempts (user_id, time) VALUES ('$user_id', '$now')");
-                    return false;
+                    return $result;
                 }
             }
         } else {
             // L'utente inserito non esiste.
-            return false;
+            return $result;
         }
     }
 
@@ -211,6 +217,37 @@ class DatabaseAPI {
 
         return true;
         // return $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
+    }
+
+    public function SearchProducts($textFilter) {
+        $stmt = $this->db->prepare("SELECT ProductId, Name, ShortDesc, LongDesc, Price, PlayerNumFrom, PlayerNumTo, Category, StockQuantity, ImageName FROM products WHERE Name LIKE CONCAT('%',?,'%') OR ShortDesc LIKE CONCAT('%',?,'%') OR LongDesc LIKE CONCAT('%',?,'%')");
+        $stmt->bind_param('sss', $textFilter, $textFilter, $textFilter);
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function GetAllOrders() {
+        $stmt = $this->db->prepare("SELECT OrderId, User, Status FROM orders");
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function GetUserOrders() {
+        $stmt = $this->db->prepare("SELECT o.OrderId, o.User, o.Status, os.Description FROM orders AS o INNER JOIN order_status AS os ON os.StatusId = o.Status WHERE o.User = ?");
+        $stmt->bind_param('s', $_SESSION['user_id']);
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function GetOrderDetails($orderId) {
+        $stmt = $this->db->prepare("SELECT od.RowNum, od.Product, od.Quantity, od.TotalPrice, p.Name FROM order_details AS od INNER JOIN products AS p ON od.Product = p.ProductId WHERE `Order` = ?");
+        $stmt->bind_param('s', $orderId);
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
 ?>

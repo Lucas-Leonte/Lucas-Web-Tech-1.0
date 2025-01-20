@@ -1,7 +1,7 @@
 INSERT INTO `roles`
 (`RoleId`, `Description`)
 VALUES
-(0, 'Vendor'),
+(0, 'Seller'),
 (1, 'Customer');
 
 INSERT INTO `users`
