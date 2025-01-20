@@ -40,6 +40,10 @@ form {
     max-width: 400px;
 }
 
+label {
+    display: none;
+}
+
 fieldset {
     display: flex;
     flex-direction: column;
@@ -71,7 +75,8 @@ nav {
 nav ul {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     height: 63px;
     border-bottom: 3px solid #9f9f9f;
     width: 100%;
@@ -81,7 +86,8 @@ nav ul {
 footer ul {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-around;
+    align-items: center;
     height: 63px;
     border-top: 3px solid #9f9f9f;
     width: 100%;
@@ -126,19 +132,26 @@ main > section {
 article {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    background-color: lightgray;
+    background-color: white;
     max-width: 400px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     margin-left: 10px;
     margin-right: 10px;
     padding: 10px;
-    width: 100%;
+    width: 95%;
+    min-height: 40vh;
+    box-shadow: 0px 0px 10px 1px #888888;
+    border: 2px solid white;
+    border-radius: 12px;
 }
 
 article > section {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
 }
 
 article aside {
@@ -149,4 +162,37 @@ article aside {
 article img {
     width: 200px;
     height: auto;
+}
+
+article > footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
+
+article > footer > section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px solid gray;
+    border-radius: 12px;
+    width: 100px;
+}
+
+article > footer > section > h2:first-child {
+    margin-left: 10px;
+}
+
+article > footer > section > h2:last-child {
+    margin-right: 10px;
+}
+
+article > section > figure {
+    margin: auto;
+}
+
+article > section > aside {
+    margin-right: 15px;
+    text-align: right;
 }

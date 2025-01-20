@@ -79,7 +79,6 @@ class DatabaseAPI {
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-
     
     public function GetUserCartProducts() {
         $stmt = $this->db->prepare("SELECT p.ProductId, p.Name, p.LongDesc, p.Price, p.PlayerNumFrom, p.PlayerNumTo, p.Category, p.ImageName, c.Quantity FROM carts AS c INNER JOIN products AS p ON c.Product = p.ProductId WHERE c.User = ?");
@@ -87,6 +86,131 @@ class DatabaseAPI {
 
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function IncreaseUserCartProduct($productId) {
+        try {
+        $stmt = $this->db->prepare("SELECT Quantity FROM carts WHERE User = ? AND Product = ?");
+        $stmt->bind_param('ss', $_SESSION['user_id'], $productId);
+        $stmt->execute();
+        
+        $currentQuantity = $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]["Quantity"];
+        $newQuantity = $currentQuantity + 1;
+
+        $stmt = $this->db->prepare("UPDATE carts SET Quantity = ? WHERE User = ? AND Product = ?");
+        $stmt->bind_param('sss', $newQuantity, $_SESSION['user_id'], $productId);
+        $stmt->execute();
+
+        return $newQuantity;
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function DecreaseUserCartProduct($productId) {
+        $stmt = $this->db->prepare("SELECT Quantity FROM carts WHERE User = ? AND Product = ?");
+        $stmt->bind_param('ss', $_SESSION['user_id'], $productId);
+        $stmt->execute();
+        
+        $currentQuantity = $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]["Quantity"];
+        $newQuantity = $currentQuantity - 1;
+
+        if ($newQuantity <= 0) {
+            $stmt = $this->db->prepare("DELETE FROM carts WHERE User = ? AND Product = ?");
+            $stmt->bind_param('ss', $_SESSION['user_id'], $productId);
+            $stmt->execute();
+        } else {
+            $stmt = $this->db->prepare("UPDATE carts SET Quantity = ? WHERE User = ? AND Product = ?");
+            $stmt->bind_param('sss', $newQuantity, $_SESSION['user_id'], $productId);
+            $stmt->execute();
+        }
+
+        return $newQuantity;
+    }
+
+    public function CheckoutUserCart() {
+        // Ottenimento prodotti del carrello
+        $cartProducts = $this->GetUserCartProducts();
+
+        if (count($cartProducts) == 0) {
+            return "noProducts";
+        }
+
+        // Check prezzo totale del carrello
+        $stmt = $this->db->prepare("SELECT SUM(p.Price * c.Quantity) AS Total FROM products AS p INNER JOIN carts AS c ON p.ProductId = c.Product WHERE c.User = ?");
+        $stmt->bind_param('s', $_SESSION['user_id'],);
+        $stmt->execute();
+
+        $totalPrice = $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['Total'];
+
+        // Check budget utente
+        $stmt = $this->db->prepare("SELECT Budget FROM users WHERE UserId = ?");
+        $stmt->bind_param('s', $_SESSION['user_id'],);
+        $stmt->execute();
+
+        $userBudget = $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['Budget'];
+
+        if ($userBudget < $totalPrice) {
+            return "notEnoughBudget";
+        }
+
+        // Acquisto
+        $remainingBudget = $userBudget - $totalPrice;
+
+        // Aggiornamento budget utente
+        $stmt = $this->db->prepare("UPDATE users SET Budget = ? WHERE UserId = ?");
+        $stmt->bind_param('ss', $remainingBudget, $_SESSION['user_id'],);
+        $stmt->execute();
+
+        // Creazione ordine
+        $orderStatus = 1;
+
+        $stmt = $this->db->prepare("INSERT INTO orders (`User`, `Status`) VALUES (?,?)");
+        $stmt->bind_param('ss', $_SESSION['user_id'], $orderStatus);
+        $stmt->execute();
+
+        // Creazione dettaglio ordine
+        $orderId = $stmt->insert_id;
+
+        for ($i = 0; $i < count($cartProducts); $i++) {
+            $currentProduct = $cartProducts[$i];
+            $rowNum = $i + 1;
+
+            $price = $currentProduct['Price'];
+            $quantity = $currentProduct['Quantity'];
+
+            $totalPrice = $price * $quantity;
+
+            $stmt = $this->db->prepare("INSERT INTO order_details (`Order`, `RowNum`, `Product`, `Quantity`, `TotalPrice`) VALUES (?,?,?,?,?)");
+            $stmt->bind_param('sssss', $orderId, $rowNum, $currentProduct["ProductId"], $quantity, $totalPrice);
+            $stmt->execute();
+        }
+
+        // Pulizia del carrello
+        $stmt = $this->db->prepare("DELETE FROM carts WHERE User = ?");
+        $stmt->bind_param('s', $_SESSION['user_id'],);
+        $stmt->execute();
+
+        return "ok";
+    }
+
+    public function GetProductDetails($productId) {
+        $stmt = $this->db->prepare("SELECT ProductId, Name, ShortDesc, LongDesc, Price, PlayerNumFrom, PlayerNumTo, Category, StockQuantity, ImageName FROM products WHERE ProductId = ?");
+        $stmt->bind_param('s', $productId);
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
+    }
+
+    public function AddProductToCart($productId) {
+        $quantity = 1;
+
+        $stmt = $this->db->prepare("INSERT INTO carts (`User`,`Product`,`Quantity`) VALUES (?,?,?)");
+        $stmt->bind_param('sss', $_SESSION['user_id'], $productId, $quantity);
+        $stmt->execute();
+
+        return true;
+        // return $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
     }
 }
 ?>

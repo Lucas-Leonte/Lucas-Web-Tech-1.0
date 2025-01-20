@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `elab`.`order_status` (
 ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS `elab`.`orders` (
-    `OrderId` INT NOT NULL,
+    `OrderId` INT NOT NULL AUTO_INCREMENT,
     `User` INT NOT NULL,
     `Status` INT NOT NULL,
     PRIMARY KEY(`OrderId`),
