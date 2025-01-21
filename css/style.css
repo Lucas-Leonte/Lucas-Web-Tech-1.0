@@ -199,6 +199,7 @@ article > section > aside {
 
 table {
     margin: 5px;
+    width: 100%;
 }
 
 table td, table th{
@@ -213,4 +214,8 @@ table > thead {
 
 table tr {
     text-align: center;
+}
+
+section.wallet {
+    margin-bottom: 70px;
 }

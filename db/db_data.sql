@@ -24,7 +24,12 @@ VALUES
 ('Exploding Kittens', 'Gioco di carte con gattini', 'Descrizione lunga di test', 19.99, 1, 8, 2, 20, 'Exploding Kittens.jpg'),
 ('Cubo di Rubik', 'Il rompicapo più famoso', 'Descrizione lunga di test', 4.99, 1, 1, 2, 30, 'Cubo Rubik.png');
 
--- INSERT INTO `notification_types` VALUES
+INSERT INTO `notification_types`
+(`TypeId`, `Description`)
+VALUES
+(1, 'Success'),
+(2, 'Warning'),
+(3, 'Error');
 
 INSERT INTO `order_status`
 (`Description`)

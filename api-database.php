@@ -204,6 +204,10 @@ class DatabaseAPI {
         $stmt->bind_param('s', $_SESSION['user_id'],);
         $stmt->execute();
 
+        // Notifica
+        $message = "Acquisto effettuato di € ".$totalPrice." ordine #".$orderId;
+        $this->SendNotificationToCurrentUser(1, $message);
+
         return "ok";
     }
 
@@ -220,10 +224,9 @@ class DatabaseAPI {
 
         $stmt = $this->db->prepare("INSERT INTO carts (`User`,`Product`,`Quantity`) VALUES (?,?,?)");
         $stmt->bind_param('sss', $_SESSION['user_id'], $productId, $quantity);
-        $stmt->execute();
+        $result = $stmt->execute();
 
-        return true;
-        // return $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
+        return $result;
     }
 
     public function SearchProducts($textFilter) {
@@ -255,6 +258,60 @@ class DatabaseAPI {
         $stmt->execute();
 
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function GetUserBudgetDetails() {
+        $stmt = $this->db->prepare("SELECT Budget FROM users WHERE UserId = ?");
+        $stmt->bind_param('s', $_SESSION['user_id']);
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
+    }
+
+    public function ChargeUserWallet($money) {
+        $stmt = $this->db->prepare("UPDATE users SET Budget = Budget + ? WHERE UserId = ?");
+        $stmt->bind_param('ss', $money, $_SESSION['user_id']);
+        $success = $stmt->execute();
+
+        $stmt = $this->db->prepare("SELECT Budget FROM users WHERE UserId = ?");
+        $stmt->bind_param('s', $_SESSION['user_id']);
+        $stmt->execute();
+        $stmt->bind_result($newBudget);
+        $stmt->fetch();
+
+        $result["success"] = $success;
+        $result["newBudget"] = $newBudget;
+
+        return $result;
+    }
+
+    public function WithdrawUserWallet($money) {
+        $stmt = $this->db->prepare("UPDATE users SET Budget = GREATEST(Budget - ?, 0) WHERE UserId = ?");
+        $stmt->bind_param('ss', $money, $_SESSION['user_id']);
+        $success = $stmt->execute();
+
+        $stmt = $this->db->prepare("SELECT Budget FROM users WHERE UserId = ?");
+        $stmt->bind_param('s', $_SESSION['user_id']);
+        $stmt->execute();
+        $stmt->bind_result($newBudget);
+        $stmt->fetch();
+
+        $result["success"] = $success;
+        $result["newBudget"] = $newBudget;
+
+        return $result;
+    }
+
+    public function SendNotificationToUser($user, $type, $message) {
+        $stmt = $this->db->prepare("INSERT INTO notifications (`User`,`Type`,`Description`) VALUES (?,?,?)");
+        $stmt->bind_param('sss', $user, $type, $message);
+        $success = $stmt->execute();
+
+        return $success;
+    }
+
+    public function SendNotificationToCurrentUser($type, $message) {
+        return $this->SendNotificationToUser($_SESSION['user_id'], $type, $message);
     }
 }
 ?>
