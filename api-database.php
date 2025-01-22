@@ -67,16 +67,27 @@ class DatabaseAPI {
         }
 
         $userRole = 1;
+        $budget = 0.00;
 
         // Crea una chiave casuale
         $random_salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
         // Crea una password usando la chiave appena creata.
         $securePassword = hash('sha512', $password.$random_salt);
 
-        $stmt = $this->db->prepare("INSERT INTO users (`Email`, `Role`, `Password`, `PasswordSalt`, `PhoneNum`) VALUES (?,?,?,?,?)");
-        $stmt->bind_param('sssss', $email, $userRole, $securePassword, $random_salt, $phoneNum);
-        
-        return $stmt->execute();
+        // Se la registrazione avviene con una mail istituzionale, vengono donati 100€ di budget iniziale
+        $emailStrings = explode('@', $email);
+        $emailDom = $emailStrings[count($emailStrings) - 1];
+
+        if (strtolower($emailDom) == "studio.unibo.it") {
+            $budget = 100.00;
+        }
+
+        // Registrazione utente
+        $stmt = $this->db->prepare("INSERT INTO users (`Email`, `Role`, `Password`, `PasswordSalt`, `PhoneNum`, `Budget`) VALUES (?,?,?,?,?,?)");
+        $stmt->bind_param('ssssss', $email, $userRole, $securePassword, $random_salt, $phoneNum, $budget);
+        $result = $stmt->execute();
+
+        return $result;
     }
 
     public function GetProducts() {
@@ -193,6 +204,10 @@ class DatabaseAPI {
         $stmt->bind_param('s', $_SESSION['user_id'],);
         $stmt->execute();
 
+        // Notifica
+        $message = "Acquisto effettuato di € ".$totalPrice." ordine #".$orderId;
+        $this->SendNotificationToCurrentUser(1, $message);
+
         return "ok";
     }
 
@@ -209,10 +224,9 @@ class DatabaseAPI {
 
         $stmt = $this->db->prepare("INSERT INTO carts (`User`,`Product`,`Quantity`) VALUES (?,?,?)");
         $stmt->bind_param('sss', $_SESSION['user_id'], $productId, $quantity);
-        $stmt->execute();
+        $result = $stmt->execute();
 
-        return true;
-        // return $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
+        return $result;
     }
 
     public function SearchProducts($textFilter) {
@@ -237,6 +251,17 @@ class DatabaseAPI {
 
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
+//funzione venditore aggiungere un item
+public function AddSellerItem($name, $price, $file){
+    try{
+        $stmt = $this->db->prepare("INSERT INTO `products` (`ProductId`, `Name`, `ShortDesc`, `LongDesc`, `Price`, `PlayerNumFrom`, `PlayerNumTo`, `Category`, `StockQuantity`, `ImageName`) VALUES (NULL, '$name', 'test', 'testing', '$price', '1', '1', '1', '10', '$file')");
+        $stmt->execute();
+
+        return "Data Added";
+    }catch(Exception $e){
+        return "Unable to handle the data";
+    }
+} 
 
     public function GetOrderDetails($orderId) {
         $stmt = $this->db->prepare("SELECT od.RowNum, od.Product, od.Quantity, od.TotalPrice, p.Name FROM order_details AS od INNER JOIN products AS p ON od.Product = p.ProductId WHERE `Order` = ?");
@@ -246,16 +271,58 @@ class DatabaseAPI {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    //funzione venditore aggiungere un item
-    public function AddSellerItem($name, $price, $file){
-        try{
-            $stmt = $this->db->prepare("INSERT INTO `products` (`ProductId`, `Name`, `ShortDesc`, `LongDesc`, `Price`, `PlayerNumFrom`, `PlayerNumTo`, `Category`, `StockQuantity`, `ImageName`) VALUES (NULL, '$name', 'test', 'testing', '$price', '1', '1', '1', '10', '$file')");
-            $stmt->execute();
+    public function GetUserBudgetDetails() {
+        $stmt = $this->db->prepare("SELECT Budget FROM users WHERE UserId = ?");
+        $stmt->bind_param('s', $_SESSION['user_id']);
+        $stmt->execute();
 
-            return "Data Added";
-        }catch(Exception $e){
-            return "Unable to handle the data";
-        }
-    } 
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
+    }
+
+    public function ChargeUserWallet($money) {
+        $stmt = $this->db->prepare("UPDATE users SET Budget = Budget + ? WHERE UserId = ?");
+        $stmt->bind_param('ss', $money, $_SESSION['user_id']);
+        $success = $stmt->execute();
+
+        $stmt = $this->db->prepare("SELECT Budget FROM users WHERE UserId = ?");
+        $stmt->bind_param('s', $_SESSION['user_id']);
+        $stmt->execute();
+        $stmt->bind_result($newBudget);
+        $stmt->fetch();
+
+        $result["success"] = $success;
+        $result["newBudget"] = $newBudget;
+
+        return $result;
+    }
+
+    public function WithdrawUserWallet($money) {
+        $stmt = $this->db->prepare("UPDATE users SET Budget = GREATEST(Budget - ?, 0) WHERE UserId = ?");
+        $stmt->bind_param('ss', $money, $_SESSION['user_id']);
+        $success = $stmt->execute();
+
+        $stmt = $this->db->prepare("SELECT Budget FROM users WHERE UserId = ?");
+        $stmt->bind_param('s', $_SESSION['user_id']);
+        $stmt->execute();
+        $stmt->bind_result($newBudget);
+        $stmt->fetch();
+
+        $result["success"] = $success;
+        $result["newBudget"] = $newBudget;
+
+        return $result;
+    }
+
+    public function SendNotificationToUser($user, $type, $message) {
+        $stmt = $this->db->prepare("INSERT INTO notifications (`User`,`Type`,`Description`) VALUES (?,?,?)");
+        $stmt->bind_param('sss', $user, $type, $message);
+        $success = $stmt->execute();
+
+        return $success;
+    }
+
+    public function SendNotificationToCurrentUser($type, $message) {
+        return $this->SendNotificationToUser($_SESSION['user_id'], $type, $message);
+    }
 }
 ?>

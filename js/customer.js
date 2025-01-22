@@ -402,14 +402,74 @@ async function ShowSearchPageResults(textFilter) {
 }
 
 async function ShowUserPageControls() {
-    await ShowUserOrders();
+    const budgetHtml = await ShowUserBudget();
+    const ordersHtml = await ShowUserOrders();
+
+    document.querySelector("main").innerHTML = `
+        <section class="wallet">
+            ${budgetHtml}
+        </section>
+        <section class="orders">
+            ${ordersHtml}
+        </section>`;
+
+    document.querySelector("#charge-button").addEventListener(EVENT_CLICK, e => {
+        e.preventDefault();
+        const money = document.querySelector(`input[type="number"]`).value;
+        ChargeUserWallet(money);
+    });
+
+    document.querySelector("#withdraw-button").addEventListener(EVENT_CLICK, e => {
+        e.preventDefault();
+        const money = document.querySelector(`input[type="number"]`).value;
+        WithdrawUserWallet(money);
+    });
+}
+
+async function ShowUserBudget() {
+    const formData = new FormData();
+    formData.append("action", 1);
+
+    return await ExecutePostRequest("api-wallet.php", formData, async budget => {
+        const resultHtml = `
+            <h2 id="budget">Disponibilita': <strong>${budget["Budget"]} €</strong></h2>
+            <input type="number" step=".01" value="0.00"/>
+            <input type="button" id="charge-button" value="Carica"/>
+            <input type="button" id="withdraw-button" value="Preleva"/>`;
+        return resultHtml;
+    }, error => console.log(error));
+}
+
+function RefreshUserBudget(newBudget) {
+    document.querySelector("#budget").innerHTML =
+        `Disponibilita': <strong>${newBudget} €</strong>`;
+}
+
+async function ChargeUserWallet($money) {
+    const formData = new FormData();
+    formData.append("action", 2);
+    formData.append("Money", $money);
+
+    await ExecutePostRequest("api-wallet.php", formData, async result => {
+        RefreshUserBudget(result["newBudget"]);
+    }, error => console.log(error));
+}
+
+async function WithdrawUserWallet($money) {
+    const formData = new FormData();
+    formData.append("action", 3);
+    formData.append("Money", $money);
+
+    await ExecutePostRequest("api-wallet.php", formData, async result => {
+        RefreshUserBudget(result["newBudget"]);
+    }, error => console.log(error));
 }
 
 async function ShowUserOrders() {
     const formData = new FormData();
     formData.append("action", 2);
 
-    await ExecutePostRequest("api-orders.php", formData, async orders => {
+    return await ExecutePostRequest("api-orders.php", formData, async orders => {
         let ordersHtml = "";
 
         for (let i = 0; i < orders.length; i++) {
@@ -454,11 +514,13 @@ async function ShowUserOrders() {
             }, innerError => console.log(innerError));
         }
 
-        document.querySelector("main").innerHTML = `
+        const resultHtml = `
             <table>
                 <caption>I tuoi ordini</caption>
                 ${ordersHtml}
             </table>`;
+
+        return resultHtml;
     }, error => console.log(error));
 }
 

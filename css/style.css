@@ -199,6 +199,7 @@ article > section > aside {
 
 table {
     margin: 5px;
+    width: 100%;
 }
 
 table td, table th{

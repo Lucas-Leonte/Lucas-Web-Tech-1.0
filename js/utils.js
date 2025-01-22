@@ -38,7 +38,7 @@ async function ExecutePostRequest(url, formData, onSuccess, onError) {
             throw new Error(`Response status: ${response.status}`);
         }
 
-        onSuccess(await response.json());
+        return onSuccess(await response.json());
     } catch (error) {
         onError(error);
     }
