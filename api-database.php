@@ -245,5 +245,17 @@ class DatabaseAPI {
 
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
+
+    //funzione venditore aggiungere un item
+    public function AddSellerItem($name, $price, $file){
+        try{
+            $stmt = $this->db->prepare("INSERT INTO `products` (`ProductId`, `Name`, `ShortDesc`, `LongDesc`, `Price`, `PlayerNumFrom`, `PlayerNumTo`, `Category`, `StockQuantity`, `ImageName`) VALUES (NULL, '$name', 'test', 'testing', '$price', '1', '1', '1', '10', '$file')");
+            $stmt->execute();
+
+            return "Data Added";
+        }catch(Exception $e){
+            return "Unable to handle the data";
+        }
+    } 
 }
 ?>
