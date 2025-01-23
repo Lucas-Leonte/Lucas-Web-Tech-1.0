@@ -216,6 +216,17 @@ table tr {
     text-align: center;
 }
 
+@keyframes ease-in-from-top {
+    0% {
+        transform: translateY(-20%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
 /*pagina venditore 
 Author: Lucas*/
 
@@ -238,6 +249,13 @@ main > div > section{
 }
 main > div > section.show{
     display: flex;
+}
+
+main > div > section.show > form {
+    transform: translateY(0%);
+    animation-name: ease-in-from-top;
+    animation-duration: .5s;
+    animation-timing-function: ease-out;
 }
 
 main > div > section > form{
