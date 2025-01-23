@@ -1,6 +1,8 @@
 async function ShowSellerHomePage() {
     const theUrl = "api-products.php"
 
+    //prova collocazione repository personale Lucas
+
     fetch(theUrl, {
         method: "GET",
         headers: {
