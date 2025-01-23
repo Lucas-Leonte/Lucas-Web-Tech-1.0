@@ -324,5 +324,13 @@ public function AddSellerItem($name, $price, $file){
     public function SendNotificationToCurrentUser($type, $message) {
         return $this->SendNotificationToUser($_SESSION['user_id'], $type, $message);
     }
+
+    public function SecureLogout() {
+        $_SESSION['user_id'] = '';
+        $_SESSION['email'] = '';
+        $_SESSION['login_string'] = '';
+
+        return true;
+    }
 }
 ?>

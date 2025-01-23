@@ -70,6 +70,11 @@ async function ShowNavbar() {
             </figure>
         </li>
     </ul>`;
+
+    document.querySelector("nav > ul > li:first-child").addEventListener(EVENT_CLICK, e => {
+        e.preventDefault();
+        Logout();
+    })
 }
 
 async function ClearPageControls() {
@@ -521,6 +526,12 @@ async function ShowUserOrders() {
             </table>`;
 
         return resultHtml;
+    }, error => console.log(error));
+}
+
+async function Logout() {
+    await ExecutePostRequest("api-secure-logout.php", new FormData(), async res => {
+        this.ShowLoginPage();
     }, error => console.log(error));
 }
 
