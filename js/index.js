@@ -5,9 +5,9 @@ async function ShowLoginPage() {
         <form action="" method="POST">
             <fieldset>
                 <label for="email">Email: </label>
-                <input type="email" id="email" name="email" placeholder="Email *" required value="test.prova@gmail.com"/>
+                <input type="email" id="email" name="email" placeholder="Email *" required value="ale.2000.ar26@gmail.com"/>
                 <label for="password">Password: </label>
-                <input type="password" id="password" name="password" placeholder="Password *" required value="test"/>
+                <input type="password" id="password" name="password" placeholder="Password *" required value="admin"/>
             </fieldset>
             <input type="submit" value="Accedi"/>
             <p>Non hai un account? <a href="javascript:ShowSignUpPage()">Registrati</a></p>
