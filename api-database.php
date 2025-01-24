@@ -251,7 +251,7 @@ class DatabaseAPI {
 
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-
+//to do, aggiungere inserimento delle descrizioni e dettagli specifici 
     public function AddSellerItem($name, $price, $file) {
         try {
             $stmt = $this->db->prepare("INSERT INTO `products` (`Name`, `ShortDesc`, `LongDesc`, `Price`, `PlayerNumFrom`, `PlayerNumTo`, `Category`, `StockQuantity`, `ImageName`) VALUES (?, 'Short description', 'Long description', ?, 1, 1, 1, 10, ?)");
