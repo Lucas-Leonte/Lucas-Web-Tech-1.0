@@ -60,32 +60,30 @@ async function ShowSellerHomePage() {
         })
 
         let theForm = document.querySelector('form')
-        theForm.addEventListener('submit', (e)=>{
-             e.preventDefault()
-             let theProductName = document.querySelector('input[name=productName]').value
-             let theProductPrice = document.querySelector('input[name=productPrice]').value
-             let theProductFile = document.querySelector('input[name=productFile]').value
-             theProductFile = theProductFile.replace('C:\\fakepath\\', "")
-            //instance of a form
-             let theFormData = new FormData()
-             //assigning values to the FOrm
-             theFormData.append('name', theProductName)
-             theFormData.append('price', theProductPrice)                
-             theFormData.append('file', theProductFile)
+        theForm.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            let theProductName = document.querySelector('input[name=productName]').value
+            let theProductPrice = document.querySelector('input[name=productPrice]').value
+            let theProductFile = document.querySelector('input[name=productFile]').files[0]
 
-             //send form data to the API
-             fetch('./api-new-seller-item.php', {
+            //instance of a form
+            let theFormData = new FormData()
+            //assigning values to the Form
+            theFormData.append('name', theProductName)
+            theFormData.append('price', theProductPrice)
+            theFormData.append('file', theProductFile)
+
+            //send form data to the API
+            let response = await fetch('./api-new-seller-item.php', {
                 method: "POST",
                 body: theFormData
-             }).then(res => console.log(res))
-             
+            })
+            let result = await response.json()
+            console.log(result)
 
-
+            // Refresh the seller home page to show the new product
+            ShowSellerHomePage()
         })
 
-        
-
     })
-
-
 }

@@ -10,7 +10,7 @@ async function ShowLoginPage() {
                 <input type="password" id="password" name="password" placeholder="Password *" required value="admin"/>
             </fieldset>
             <input type="submit" value="Accedi"/>
-            <p>Non hai un account? <a href="javascript:ShowSignUpPage()">Registrati</a></p>
+            <p>Non hai un account? <a ="javascript:ShowSignUpPage()">Registrati</a></p>
         </form>`;
 
     document.querySelector("main form input[type=submit]").addEventListener(EVENT_CLICK, e => {
